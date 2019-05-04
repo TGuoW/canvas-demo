@@ -49,7 +49,7 @@
 
     function curve(order,length,angle, l) {
         if (order==0){
-            draw_line(l);
+            draw_line(l || length);
         }else{
             curve(order-1,length /2,-angle, length /2 - sub * length / 2);
             turn(angle);
@@ -62,14 +62,16 @@
 function drawTriangle (depth) {
     let i = 1
     let step = () => {
-        i-=0.01
-        console.log(1)
+        i-=0.02
+        console.log(i)
         context.clearRect(0,0,c.width,c.height)
         SierpinskiTriangle({x:300,y:360},500, depth, i)
         context.stroke();
         if (i <= 0) {
             i = 1
             drawTriangle(depth + 1)
+            cancelAnimationFrame(step)
+            return
         }
         requestAnimationFrame(step)
     }
