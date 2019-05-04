@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sierpinski Triangle</title>
+</head>
+<body>
+    <canvas id="canvas" 
+    width="600" height="600" 
+    style="display:block;margin:50px auto">
+        你的浏览器不支持canvas
+    </canvas>
+</body>
+<script type="text/javascript">
+    var c = document.getElementById("canvas")
+    var context = c.getContext("2d");
+    context.strokeStyle = "#F5270B";
+    context.lineWidth = 1;
+    //根据三顶点坐标绘制一个三角形
+    function SierpinskiTriangle(p,len,depth, sub){
+    var r=len/Math.sqrt(3);
+    //记录当前端点，默认为左下角顶点坐标
+    // var currentPoint={x:p.x-len/2, y:p.y+r/2};
+    var currentPoint={x:50, y:548};
+    //记录当前方向角
+    var currentAngle=0;
+
+    //旋转方法，将下次画线的方向逆时针旋转
+    function turn (angle) {
+        currentAngle+=angle;
+    }
+    //画线方法，根据当前端点和画线方向绘制
+    function draw_line (length) {
+        var angle=currentAngle/180*Math.PI;
+        currentPoint.x+=length*Math.cos(angle);
+        currentPoint.y-=length*Math.sin(angle);
+        context.lineTo(currentPoint.x,currentPoint.y);
+    }
+
+    //开始画折线，如果深度是偶数便可直接绘制折线，否则需要以斜60度为初始方向
+    context.beginPath();
+    context.moveTo(currentPoint.x,currentPoint.y)
+    if (depth%2==0){
+        curve(depth,len,-60);
+    }else{
+        turn(60);
+        curve(depth,len,-60);
+    }
+
+    function curve(order,length,angle, l) {
+        if (order==0){
+            draw_line(l);
+        }else{
+            curve(order-1,length /2,-angle, length /2 - sub * length / 2);
+            turn(angle);
+            curve(order-1,length /2,angle, length /2 + sub * length / 2);
+            turn(angle);
+            curve(order-1,length /2,-angle, length /2 - sub * length / 2);
+        }
+    }
+}
+function drawTriangle (depth) {
+    let i = 1
+    let step = () => {
+        i-=0.01
+        console.log(1)
+        context.clearRect(0,0,c.width,c.height)
+        SierpinskiTriangle({x:300,y:360},500, depth, i)
+        context.stroke();
+        if (i <= 0) {
+            i = 1
+            drawTriangle(depth + 1)
+        }
+        requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+}
+drawTriangle(0)
+
+</script>
+</html>
